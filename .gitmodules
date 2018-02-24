@@ -1,3 +1,6 @@
 [submodule "external/alphatwirl"]
 	path = external/alphatwirl
 	url = git@github.com:alphatwirl/alphatwirl.git
+[submodule "external/atcmsedm"]
+	path = external/atcmsedm
+	url = git@github.com:alphatwirl/atcmsedm.git
