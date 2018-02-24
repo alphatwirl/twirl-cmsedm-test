@@ -1,0 +1,3 @@
+[submodule "external/alphatwirl"]
+	path = external/alphatwirl
+	url = git@github.com:alphatwirl/alphatwirl.git
