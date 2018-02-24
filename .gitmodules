@@ -4,3 +4,6 @@
 [submodule "external/atcmsedm"]
 	path = external/atcmsedm
 	url = git@github.com:alphatwirl/atcmsedm.git
+[submodule "external/atnanoaod"]
+	path = external/atnanoaod
+	url = git@github.com:alphatwirl/atnanoaod.git
