@@ -5,6 +5,7 @@ import argparse
 import logging
 import numpy
 import pprint
+import collections
 
 ##__________________________________________________________________||
 import alphatwirl
@@ -117,40 +118,26 @@ def configure_tables_after_1st_event_selection():
 ##__________________________________________________________________||
 def configure_datasets():
 
-    ret = atnanoaod.query.build_datasets_from_tbl_paths(
-        tbl_cmsdataset_paths=args.tbl_cmsdatasets,
-        datasets=args.datasets if args.datasets else None
-        # give None to datasets if args.datasets is an empty list
-        # so that build_datasets() returns all datasets rather than
-        # an empty list.
-    )
+    # ret = atnanoaod.query.build_datasets_from_tbl_paths(
+    #     tbl_cmsdataset_paths=args.tbl_cmsdatasets,
+    #     datasets=args.datasets if args.datasets else None
+    #     # give None to datasets if args.datasets is an empty list
+    #     # so that build_datasets() returns all datasets rather than
+    #     # an empty list.
+    # )
 
-    # 
-    # ret = [
-    #     Dataset(name='QCD_HT500to700', files=[
-    #         '/store/mc/RunIISummer16MiniAODv2/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/70000/000316AF-9FBE-E611-9761-0CC47A7C35F8.root',
-    #         '/store/mc/RunIISummer16MiniAODv2/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/70000/001E88A3-96BE-E611-8F2D-0025905B85EC.root',
-    #         '/store/mc/RunIISummer16MiniAODv2/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/70000/0032A7A3-9ABE-E611-9732-0CC47A4D765A.root',
-    #     ]),
-    #     Dataset(name='QCD_HT700to1000', files=[
-    #         '/store/mc/RunIISummer16MiniAODv2/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/00D17FD4-8EBD-E611-B17D-002590D0AFC2.root',
-    #         '/store/mc/RunIISummer16MiniAODv2/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/0258B60A-8FBD-E611-8B0B-24BE05C6C7F1.root',
-    #         '/store/mc/RunIISummer16MiniAODv2/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/0413591E-99BD-E611-B281-0CC47A4C8ECA.root',
-    #         ]),
-    # ]
-
-    # ret = [
-    #     atnanoaod.dataset.Dataset(name='QCD_HT500to700', files=[
-    #         'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/70000/000316AF-9FBE-E611-9761-0CC47A7C35F8.root',
-    #         'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/70000/001E88A3-96BE-E611-8F2D-0025905B85EC.root',
-    #         'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/70000/0032A7A3-9ABE-E611-9732-0CC47A4D765A.root',
-    #     ]),
-    #     atnanoaod.dataset.Dataset(name='QCD_HT700to1000', files=[
-    #         'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/00D17FD4-8EBD-E611-B17D-002590D0AFC2.root',
-    #         'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/0258B60A-8FBD-E611-8B0B-24BE05C6C7F1.root',
-    #         'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/0413591E-99BD-E611-B281-0CC47A4C8ECA.root',
-    #         ]),
-    # ]
+    ret = [
+        atnanoaod.dataset.Dataset(name='ZJetsToNuNu_HT400To600', files=[
+            '/hdfs/dpm/phy.bris.ac.uk/home/cms/store/mc/RunIISpring16MiniAODv2/ZJetsToNuNu_HT-400To600_13TeV-madgraph/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/90000/FA22B8D3-A046-E611-AEB6-00259073E4C8.root',
+            '/hdfs/dpm/phy.bris.ac.uk/home/cms/store/mc/RunIISpring16MiniAODv2/ZJetsToNuNu_HT-400To600_13TeV-madgraph/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/90000/F661992C-AE46-E611-9B2D-0CC47A1E0476.root',
+            '/hdfs/dpm/phy.bris.ac.uk/home/cms/store/mc/RunIISpring16MiniAODv2/ZJetsToNuNu_HT-400To600_13TeV-madgraph/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/90000/CCEE61DF-FA48-E611-AEF2-44A842CF05A5.root',
+        ]),
+        atnanoaod.dataset.Dataset(name='ZJetsToNuNu_HT600To800', files=[
+            '/hdfs/dpm/phy.bris.ac.uk/home/cms/store/mc/RunIISpring16MiniAODv2/WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/40000/F614500E-8A24-E611-AB01-B083FECFEF7D.root',
+            '/hdfs/dpm/phy.bris.ac.uk/home/cms/store/mc/RunIISpring16MiniAODv2/WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/40000/F431EB87-7D24-E611-ACD5-B083FECFF2BF.root',
+            '/hdfs/dpm/phy.bris.ac.uk/home/cms/store/mc/RunIISpring16MiniAODv2/WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/40000/F408470E-8D24-E611-A912-D4AE526DF2E3.root ',
+            ]),
+    ]
 
     path = os.path.join(args.outdir, 'datasets.txt')
     if args.force or not os.path.exists(path):
@@ -163,36 +150,47 @@ def configure_datasets():
 ##__________________________________________________________________||
 def run(reader_collector_pairs, datasets):
 
-    htcondor_job_desc_extra_request = ['request_memory = 250']
-
-    # https://lists.cs.wisc.edu/archive/htcondor-users/2014-June/msg00133.shtml
-    # hold a job and release to a different machine after a certain minutes
-    htcondor_job_desc_extra_resubmit = [
-        'expected_runtime_minutes = 20',
-        'use_x509userproxy = true',
-        'job_machine_attrs = Machine',
-        'job_machine_attrs_history_length = 4',
-        'requirements = target.machine =!= MachineAttrMachine1 && target.machine =!= MachineAttrMachine2 &&  target.machine =!= MachineAttrMachine3',
-        'periodic_hold = JobStatus == 2 && CurrentTime - EnteredCurrentStatus > 60 * $(expected_runtime_minutes)',
-        'periodic_hold_subcode = 1',
-        'periodic_release = HoldReasonCode == 3 && HoldReasonSubCode == 1 && JobRunCount < 3',
-        'periodic_hold_reason = ifthenelse(JobRunCount<3,"Ran too long, will retry","Ran too long")',
-    ]
+    htcondor_job_desc_dict_request = collections.OrderedDict([
+        ('request_memory', '250')
+    ])
 
     # http://www.its.hku.hk/services/research/htc/jobsubmission
     # avoid the machines "smXX.hadoop.cluster"
     # operator '=!=' explained at https://research.cs.wisc.edu/htcondor/manual/v7.8/4_1HTCondor_s_ClassAd.html#ClassAd:evaluation-meta
-    htcondor_job_desc_extra_blacklist = [
-        'requirements=!stringListMember(substr(Target.Machine, 0, 2), "sm,bs")'
-    ]
+    htcondor_job_desc_dict_blacklist = collections.OrderedDict([
+        ('requirements', '!stringListMember(substr(Target.Machine, 0, 2), "sm,bs") && Target.Machine=!="hd-38-33.dice.priv"'),
+    ])
 
-    ## htcondor_job_desc_extra = htcondor_job_desc_extra_request + htcondor_job_desc_extra_resubmit
-    htcondor_job_desc_extra = htcondor_job_desc_extra_request + htcondor_job_desc_extra_blacklist
+    # https://lists.cs.wisc.edu/archive/htcondor-users/2014-June/msg00133.shtml
+    # hold a job and release to a different machine after a certain minutes
+    htcondor_job_desc_dict_resubmit = collections.OrderedDict([
+        ('expected_runtime_minutes', '10'),
+        ('job_machine_attrs', 'Machine'),
+        ('job_machine_attrs_history_length', '4'),
+        ('requirements', 'target.machine =!= MachineAttrMachine1 && target.machine =!= MachineAttrMachine2 && target.machine =!= MachineAttrMachine3'),
+        ('periodic_hold', 'JobStatus == 2 && CurrentTime - EnteredCurrentStatus > 60 * $(expected_runtime_minutes)'),
+        ('periodic_hold_subcode', '1'),
+        ('periodic_release', 'HoldReasonCode == 3 && HoldReasonSubCode == 1 && JobRunCount < 3'),
+        ('periodic_hold_reason', 'ifthenelse(JobRunCount<3,"Ran too long, will retry","Ran too long")'),
+    ])
+
+    htcondor_job_desc_dict = collections.OrderedDict()
+
+    htcondor_job_desc_dict.update(htcondor_job_desc_dict_request)
+
+    # htcondor_job_desc_dict.update(htcondor_job_desc_dict_blacklist)
+    ## 'requirements' will be overridden by /condor/bin/condor_submit
+
+    # htcondor_job_desc_dict.update(htcondor_job_desc_dict_resubmit)
+    ## will override 'requirements', which in turn will be overridden
+    ## by /condor/bin/condor_submit
+
+    dispatcher_options = dict(job_desc_dict=htcondor_job_desc_dict)
 
     fw = atcmsedm.AtCMSEDM(
         quiet=args.quiet,
         parallel_mode=args.parallel_mode,
-        htcondor_job_desc_extra=htcondor_job_desc_extra,
+        dispatcher_options=dispatcher_options,
         process=args.process,
         user_modules=('atnanoaod', 'atcmsedm'),
         max_events_per_dataset=args.nevents,
